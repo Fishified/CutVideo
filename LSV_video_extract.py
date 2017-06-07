@@ -16,11 +16,11 @@ import pandas as pd
 from multiprocessing import Process
 
 
-Lsvpd = pd.read_excel('./video_extraction_Times.xlsx')
-CameraStartTimes = pd.read_excel('./Camera_start_times.xlsx')
-ipadresses = pd.read_excel('./ipadresses.xlsx')
+Lsvpd = pd.read_excel('./video_extraction_Times.xlsx',0)
+dfCameraStartTimes = pd.read_excel('./Camera_start_times.xlsx',0)
+ipadresses = pd.read_excel('./ipadresses.xlsx',0)
 Lsv=Lsvpd.as_matrix()
-CameraStartTimes=CameraStartTimes.as_matrix()
+CameraStartTimes=dfCameraStartTimes.as_matrix()
 trials=[1,2]
 commandlist=[]
 
@@ -31,6 +31,8 @@ for count in range(len(CameraStartTimes)):
     if os.path.isdir('./Cutvideo/Trial_%s' %int(CameraStartTimes[count,0])) is False:
             os.mkdir('./Cutvideo/Trial_%s' %int(CameraStartTimes[count,0]))
 
+srcfldList=['151002A','151002B','151003A','151003B','151004A','151004B',
+            '151014A','151014B','151015A','151015B','151016A','151016B','151017A']
 
 for i in range(len(Lsv)): #for each row (attempt) in list
 
@@ -38,7 +40,8 @@ for i in range(len(Lsv)): #for each row (attempt) in list
 
         if Lsv[i,3]==CameraStartTimes[count,0]:
              maxAntenna=Lsv[i,5]
-             srcfld='151002A' #this is bad and needs to be changed
+             
+             srcfld=srcfldList[count]
              start=Lsv[i,9] #number of frames from start of video to start of attempt
              stop=Lsv[i,10] #number of frames from start of video to end of attempt
              
@@ -70,21 +73,7 @@ for i in range(len(Lsv)): #for each row (attempt) in list
 
              for b in range(len(cameras)):
                  f = open('GNUtest.txt','a') #opens file
-                 print "hit"
                  #command='ffmpeg -f h264 -r:v 27 -i ./%s/*%s.h264 -ss %s -c copy -to %d %s/%s.h264 > /dev/null 2>/dev/null &\n' %(srcfld,cameras[b],start,stop,svfld,cameras[b])#run bash ffmpeg command to splice videos
 
-                 f.write('ffmpeg -f h264 -r:v 27 -i ./%s/*%s.h264 -ss %s -c copy -to %d %s/%s.h264 > /dev/null 2>/dev/null &\n' %(srcfld,cameras[b],start,stop,svfld,cameras[b]))#run bash ffmpeg command to splice videos
+                 f.write('ffmpeg -f h264 -r:v 25 -i ./%s/*%s.h264 -ss %s -c copy -to %d %s/%s.h264 > /dev/null 2>/dev/null &\n' %(srcfld,cameras[b],start,stop,svfld,cameras[b]))#run bash ffmpeg command to splice videos
                  f.close()
-            #os.system(command)
-
-#print commandlist
-
-# processes = set()
-# max_processes = 8
-#
-# for i in range(len(commandlist)):
-#     processes.add(subprocess.Popen(commandlist[i], shell=True))
-#     if len(processes) >= max_processes:
-#         os.wait()
-#         processes.difference_update([
-#             p for p in processes if p.poll() is not None])
