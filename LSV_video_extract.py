@@ -23,6 +23,7 @@ Lsv=Lsvpd.as_matrix()
 CameraStartTimes=dfCameraStartTimes.as_matrix()
 trials=[1,2]
 commandlist=[]
+timeBuffer=3
 
 if os.path.isdir('./Cutvideo') is False:
     os.mkdir('./Cutvideo')
@@ -42,8 +43,8 @@ for i in range(len(Lsv)): #for each row (attempt) in list
              maxAntenna=Lsv[i,5]
              
              srcfld=srcfldList[count]
-             start=Lsv[i,9] #number of frames from start of video to start of attempt
-             stop=Lsv[i,10] #number of frames from start of video to end of attempt
+             start=Lsv[i,9]-timeBuffer #number of frames from start of video to start of attempt
+             stop=Lsv[i,10]+timeBuffer #number of frames from start of video to end of attempt
              
              #create tag subfolder within trial
              cwd='./Cutvideo/Trial_%s/%d' %(int(CameraStartTimes[count,0]),Lsv[i,0]) 
@@ -75,5 +76,5 @@ for i in range(len(Lsv)): #for each row (attempt) in list
                  f = open('GNUtest.txt','a') #opens file
                  #command='ffmpeg -f h264 -r:v 27 -i ./%s/*%s.h264 -ss %s -c copy -to %d %s/%s.h264 > /dev/null 2>/dev/null &\n' %(srcfld,cameras[b],start,stop,svfld,cameras[b])#run bash ffmpeg command to splice videos
 
-                 f.write('ffmpeg -f h264 -r:v 25 -i ./%s/*%s.h264 -ss %s -c copy -to %d %s/%s.h264 > /dev/null 2>/dev/null &\n' %(srcfld,cameras[b],start,stop,svfld,cameras[b]))#run bash ffmpeg command to splice videos
+                 f.write('ffmpeg -r 27 -i ./%s/*%s.h264 -ss %d -to %d -r 27 %s/%s.h264 > /dev/null 2>/dev/null &\n' %(srcfld,cameras[b],start,stop,svfld,cameras[b]))#run bash ffmpeg command to splice videos
                  f.close()
