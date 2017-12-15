@@ -8,12 +8,10 @@ Creates bash script run from a linux bash shell. The bash script extracts video 
 """
 
 import numpy as np
-import subprocess
 import os
 #import cv2
 import os.path
 import pandas as pd
-from multiprocessing import Process
 
 
 Lsvpd = pd.read_excel('./video_extraction_Times.xlsx',0)
@@ -23,7 +21,7 @@ Lsv=Lsvpd.as_matrix()
 CameraStartTimes=dfCameraStartTimes.as_matrix()
 trials=[1,2]
 commandlist=[]
-timeBuffer=3
+timeBuffer=3 #seconds of time buffer before and after first and last detection
 
 if os.path.isdir('./Cutvideo') is False:
     os.mkdir('./Cutvideo')
@@ -69,11 +67,11 @@ for i in range(len(Lsv)): #for each row (attempt) in list
                  cameras=[10,12]
              if maxAntenna == 5 or maxAntenna==6 or maxAntenna==7:
                  cameras=[10,12,14,16]
-             if maxAntenna == 8 or maxAntenna==9 or maxAntenna==10:
-                 cameras=[10,12,14,16,18]
+             if maxAntenna == 8 or maxAntenna==9 or maxAntenna==10 or maxAntenna==11 or maxAntenna==12:
+                 cameras=[10,12,14,16,18,20,22]
 
              for b in range(len(cameras)):
-                 f = open('GNUtest.txt','a') #opens file
+                 f = open('snip_video_commands.txt','a') #opens file
                  #command='ffmpeg -f h264 -r:v 27 -i ./%s/*%s.h264 -ss %s -c copy -to %d %s/%s.h264 > /dev/null 2>/dev/null &\n' %(srcfld,cameras[b],start,stop,svfld,cameras[b])#run bash ffmpeg command to splice videos
 
                  f.write('ffmpeg -r 27 -i ./%s/*%s.h264 -ss %d -to %d -r 27 %s/%s.h264 > /dev/null 2>/dev/null &\n' %(srcfld,cameras[b],start,stop,svfld,cameras[b]))#run bash ffmpeg command to splice videos
